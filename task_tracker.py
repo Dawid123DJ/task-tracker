@@ -1,15 +1,18 @@
+import json
 tasks = []
 
 
 def add_task(task):
     tasks.append(task)
     print(f"Dodano zadanie: {task}")
+    save_tasks()
 
 
 def remove_task(index):
     if index < len(tasks):
         removed = tasks.pop(index)
         print(f"Usunięto zadanie: {removed}")
+        save_tasks()
     else:
         print("Nie ma zadania o podanym indeksie")
 
@@ -21,6 +24,10 @@ def list_tasks():
         print("Lista zadań:")
         for i, task in enumerate(tasks):
             print(f"{i + 1}. {task}")
+
+def save_tasks():
+    with open('tasks.json', 'w') as f:
+        json.dump(tasks, f)
 
 
 if __name__ == "__main__":
@@ -43,3 +50,4 @@ if __name__ == "__main__":
             break
         else:
             print("Nieprawidłowa opcja")
+
