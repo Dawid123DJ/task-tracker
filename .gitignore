@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.python-version
+
+# Środowiska wirtualne
+venv/
+env/
+
+# Edytory i IDE
+.vscode/
+.idea/
+*.swp
+
+# Systemy operacyjne
+.DS_Store
+Thumbs.db
+
+# Pliki wynikowe
+*.log
