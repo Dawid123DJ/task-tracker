@@ -9,12 +9,12 @@ Prosta aplikacja CLI do zarządzania zadaniami napisana w Pythonie.
 - Prosty interfejs tekstowy
 
 ## Instalacja
-Sklonuj repozytorium:
-git clone https://github.com/Dawid123DJ/task-tracker.git
+Sklonuj repozytorium: 
+git clone https://github.com/Dawid123DJ/task-tracker.git  
 cd task-tracker
 
 ## Użycie 
-Uruchom aplikacje za pomocą komedny python task_tracker.py
+Uruchom aplikacje za pomocą komendy python task_tracker.py  
 Po uruchomieniu programu wybierz opcję z menu:
 
 ### Przykład: 
