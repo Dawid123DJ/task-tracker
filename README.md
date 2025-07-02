@@ -25,7 +25,7 @@ Wybierz opcję: 1
 Podaj treść zadania: Kupic mleko
 Dodano zadanie: Kupic mleko
 ## Wymagania
-Python 3.6+
+Python 3.6+ 
 
 ## Licencja
 Projekt jest dostępny na licencji MIT - szczegóły w pliku LICENSE.
