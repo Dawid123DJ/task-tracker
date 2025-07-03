@@ -44,7 +44,13 @@ def show_task_menu():
     print("2. Usuń zadanie")
     print("3. Wyświetl zadania")
     print("4. Powrót do menu głównego")
+    print("5. Sortuj zadania")
     return input("Wybierz opcję: ")
+
+def sort_tasks():
+    global tasks
+    tasks.sort(key=lambda x: x.lower())
+    print("Zadania posortowane alfabetycznie!")
 
 if __name__ == "__main__":
     # ... inicjalizacja zadań ...
@@ -66,6 +72,8 @@ if __name__ == "__main__":
                     list_tasks()
                 elif task_choice == '4':
                     break
+                elif task_choice == '5':
+                    sort_tasks()
                 else:
                     print("Nieprawidłowa opcja")
                     
