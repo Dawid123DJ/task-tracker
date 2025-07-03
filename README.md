@@ -21,9 +21,9 @@ Po uruchomieniu programu wybierz opcję z menu:
 2. Usuń zadanie
 3. Wyświetl zadania
 4. Wyjdź
-Wybierz opcję: 1
-Podaj treść zadania: Kupic mleko
-Dodano zadanie: Kupic mleko
+Wybierz opcję: 1  
+Podaj treść zadania: Kupic mleko  
+Dodano zadanie: Kupic mleko  
 ## Wymagania
 Python 3.6+ 
 
