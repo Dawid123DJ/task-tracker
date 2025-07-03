@@ -45,17 +45,28 @@ def show_main_menu():
     return input("Wybierz opcję: ")
 
 def show_task_menu():
+    print("\n===== ZARZĄDZANIE ZADANIAMI =====")
     print("1. Dodaj zadanie")
     print("2. Usuń zadanie")
     print("3. Wyświetl zadania")
-    print("4. Powrót do menu głównego")
-    print("5. Sortuj zadania")
+    print("4. Sortuj zadania")
+    print("5. Wyszukaj zadania")
+    print("6. Powrót do menu głównego")
     return input("Wybierz opcję: ")
 
 def sort_tasks():
     global tasks
     tasks.sort(key=lambda x: x.lower())
     print("Zadania posortowane alfabetycznie!")
+
+def search_tasks(task_list, keywords):
+    if not task_list or not keywords:
+        return []
+    
+    keyword_list = [k.lower() for k in keywords.split()]
+    
+    return [task for task in task_list 
+            if all(keyword in task.lower() for keyword in keyword_list)]
 
 if __name__ == "__main__":
     # ... inicjalizacja zadań ...
@@ -75,15 +86,24 @@ if __name__ == "__main__":
                     remove_task(index)
                 elif task_choice == '3':
                     list_tasks()
-                elif task_choice == '4':
-                    break
-                elif task_choice == '5':
+                elif task_choice == '4':  # Sortowanie
                     sort_tasks()
+                elif task_choice == '5':  # Wyszukiwanie
+                    keyword = input("Podaj frazę do wyszukania: ")
+                    results = search_tasks(tasks, keyword)
+                    if results:
+                        print("\nZnalezione zadania:")
+                        for i, task in enumerate(results, 1):
+                            print(f"{i}. {task}")
+                    else:
+                        print("Brak wyników wyszukiwania")
+                elif task_choice == '6':  # Powrót
+                    break
                 else:
                     print("Nieprawidłowa opcja")
                     
         elif main_choice == '2':
-            save_tasks()  # Funkcja do zapisu zadań
+            save_tasks()
             break
         else:
             print("Nieprawidłowa opcja")
