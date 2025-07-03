@@ -26,8 +26,12 @@ def list_tasks():
             print(f"{i + 1}. {task}")
 
 def save_tasks():
-    with open('tasks.json', 'w') as f:
-        json.dump(tasks, f)
+    try:
+        with open('tasks.json', 'w') as f:
+            json.dump(tasks, f)
+        print("Zadania zapisane pomyślnie!")
+    except Exception as e:
+        print(f"Błąd zapisu: {e}")
 
 def show_main_menu():
     print("===== TASK TRACKER - SYSTEM ZADAŃ =====")
