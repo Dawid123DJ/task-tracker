@@ -29,25 +29,45 @@ def save_tasks():
     with open('tasks.json', 'w') as f:
         json.dump(tasks, f)
 
+def show_main_menu():
+    print("\n===== MENU GŁÓWNE =====")
+    print("1. Zarządzanie zadaniami")
+    print("2. Zapisz i wyjdź")
+    return input("Wybierz opcję: ")
+
+def show_task_menu():
+    print("\n===== ZARZĄDZANIE ZADANIAMI =====")
+    print("1. Dodaj zadanie")
+    print("2. Usuń zadanie")
+    print("3. Wyświetl zadania")
+    print("4. Powrót do menu głównego")
+    return input("Wybierz opcję: ")
 
 if __name__ == "__main__":
+    # ... inicjalizacja zadań ...
+    
     while True:
-        print("\n1. Dodaj zadanie")
-        print("2. Usuń zadanie")
-        print("3. Wyświetl zadania")
-        print("4. Wyjdź")
-        choice = input("Wybierz opcję: ")
-
-        if choice == '1':
-            task = input("Podaj treść zadania: ")
-            add_task(task)
-        elif choice == '2':
-            index = int(input("Podaj indeks zadania do usunięcia: ")) - 1
-            remove_task(index)
-        elif choice == '3':
-            list_tasks()
-        elif choice == '4':
+        main_choice = show_main_menu()
+        
+        if main_choice == '1':
+            while True:
+                task_choice = show_task_menu()
+                
+                if task_choice == '1':
+                    task = input("Podaj treść zadania: ")
+                    add_task(task)
+                elif task_choice == '2':
+                    index = int(input("Podaj indeks zadania do usunięcia: ")) - 1
+                    remove_task(index)
+                elif task_choice == '3':
+                    list_tasks()
+                elif task_choice == '4':
+                    break
+                else:
+                    print("Nieprawidłowa opcja")
+                    
+        elif main_choice == '2':
+            save_tasks()  # Funkcja do zapisu zadań
             break
         else:
             print("Nieprawidłowa opcja")
-
