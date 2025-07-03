@@ -30,7 +30,7 @@ def save_tasks():
         json.dump(tasks, f)
 
 def show_main_menu():
-    print("\n===== MENU GŁÓWNE =====")
+    print("===== APLIKACJA TASK TRACKER v1 =====")
     print("1. Zarządzanie zadaniami")
     print("2. Zapisz i wyjdź")
     return input("Wybierz opcję: ")
