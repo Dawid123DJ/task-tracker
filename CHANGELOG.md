@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.2.0] – 2025-07-03
+## [1.2.0]
 ### Added
 - Edycja istniejących zadań z potwierdzeniem przed zmianą
 - Walidacja danych wejściowych
