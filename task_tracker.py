@@ -1,4 +1,5 @@
 import json
+import yaml
 tasks = []
 
 
@@ -26,12 +27,16 @@ def list_tasks():
             print(f"{i + 1}. {task}")
 
 def save_tasks():
+    with open('tasks.yaml', 'w') as f:
+        yaml.dump(tasks, f)
+
+def load_tasks():
+    global tasks
     try:
-        with open('tasks.json', 'w') as f:
-            json.dump(tasks, f)
-        print("Zadania zapisane pomyślnie!")
-    except Exception as e:
-        print(f"Błąd zapisu: {e}")
+        with open('tasks.yaml', 'r') as f:
+            tasks = yaml.safe_load(f) or []
+    except FileNotFoundError:
+        tasks = []
 
 def show_main_menu():
     print("===== TASK TRACKER - SYSTEM ZADAŃ =====")
