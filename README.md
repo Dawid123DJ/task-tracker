@@ -26,7 +26,7 @@ Po uruchomieniu programu wybierz opcję z menu:
 4. Sortuj zadania
 5. Wyszukaj zadania
 6. Edytuj zadanie
-7. Powrót do menu głównego
+7. Powrót do menu głównego  
 Wybierz opcję: 1  
 Podaj treść zadania: Kupic mleko  
 Dodano zadanie: Kupic mleko  
