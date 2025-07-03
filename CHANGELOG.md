@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0] – 2025-07-03
+### Added
+- Edycja istniejących zadań z potwierdzeniem przed zmianą
+- Walidacja danych wejściowych
+- Wyświetlanie numeru wersji w menu głównym
+- Usprawniono komunikaty błędów
+- Dodano dodatkowe zabezpieczenia
+
 ## [1.0.0]
 ### Breaking Changes
 - Zmiana formatu zapisu z JSON na YAML
