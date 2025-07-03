@@ -1,5 +1,7 @@
 import json
 import yaml
+
+APP_VERSION = "1.2.0"
 tasks = []
 
 
@@ -39,7 +41,7 @@ def load_tasks():
         tasks = []
 
 def show_main_menu():
-    print("===== TASK TRACKER - SYSTEM ZADAŃ =====")
+    print("===== TASK TRACKER - SYSTEM ZADAŃ v{APP_VERSION} =====")
     print("1. Zarządzanie zadaniami")
     print("2. Zapisz i wyjdź")
     return input("Wybierz opcję: ")
