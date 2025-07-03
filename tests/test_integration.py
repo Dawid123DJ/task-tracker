@@ -1,4 +1,4 @@
-from task_tracker import add_task, remove_task, search_tasks, tasks
+from task_tracker import add_task, remove_task, search_tasks, edit_task, tasks
 
 def test_search_integration():
     # Reset globalnej listy zadań
