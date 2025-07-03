@@ -15,3 +15,17 @@ def test_search_integration():
     # Asercje
     assert len(results) == 1
     assert "Napisać raport miesięczny" in results
+
+def test_edit_integration():
+    # Reset globalnej listy zadań
+    tasks.clear()
+    
+    # Dodaj zadanie
+    add_task("Pierwotna treść")
+    
+    # Edytuj zadanie
+    edit_task(tasks, 0, "Zmieniona treść")
+    
+    # Sprawdź wynik
+    assert tasks[0] == "Zmieniona treść"
+    assert len(tasks) == 1

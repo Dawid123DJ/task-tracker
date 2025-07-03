@@ -51,7 +51,8 @@ def show_task_menu():
     print("3. Wyświetl zadania")
     print("4. Sortuj zadania")
     print("5. Wyszukaj zadania")
-    print("6. Powrót do menu głównego")
+    print("6. Edytuj zadanie")
+    print("7. Powrót do menu głównego")
     return input("Wybierz opcję: ")
 
 def sort_tasks():
@@ -68,16 +69,25 @@ def search_tasks(task_list, keywords):
     return [task for task in task_list 
             if all(keyword in task.lower() for keyword in keyword_list)]
 
+def edit_task(task_list, index, new_task):
+    if not new_task.strip():
+        raise ValueError("Treść zadania nie może być pusta")
+        
+    if 0 <= index < len(task_list):
+        task_list[index] = new_task
+    else:
+        raise IndexError("Nieprawidłowy indeks zadania")
+
 if __name__ == "__main__":
-    # ... inicjalizacja zadań ...
+    load_tasks()  # Ładowanie zadań przy starcie
     
     while True:
         main_choice = show_main_menu()
-        
+
         if main_choice == '1':
             while True:
                 task_choice = show_task_menu()
-                
+
                 if task_choice == '1':
                     task = input("Podaj treść zadania: ")
                     add_task(task)
@@ -97,11 +107,38 @@ if __name__ == "__main__":
                             print(f"{i}. {task}")
                     else:
                         print("Brak wyników wyszukiwania")
-                elif task_choice == '6':  # Powrót
+                elif task_choice == '6':  # Edycja zadania
+                    list_tasks()
+                    if tasks:
+                        try:
+                            index = int(input("Podaj indeks zadania do edycji: ")) - 1
+                            current_task = tasks[index]
+                            print(f"Edytujesz zadanie: '{current_task}'")
+                            
+                            confirm = input("Czy na pewno chcesz edytować? (T/N): ")
+                            if confirm.lower() != 't':
+                                print("Anulowano edycję")
+                                continue
+                                
+                            new_content = input("Podaj nową treść zadania: ")
+                            
+                            # Walidacja nowej treści
+                            if not new_content.strip():
+                                print("Błąd: Treść zadania nie może być pusta!")
+                                continue
+                                
+                            edit_task(tasks, index, new_content)
+                            save_tasks()
+                            print("Zadanie zaktualizowane!")
+                        except (ValueError, IndexError) as e:
+                            print(f"Błąd: {e}")
+                    else:
+                        print("Brak zadań do edycji")
+                elif task_choice == '7':  # Powrót
                     break
                 else:
                     print("Nieprawidłowa opcja")
-                    
+
         elif main_choice == '2':
             save_tasks()
             break
