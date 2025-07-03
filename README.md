@@ -6,6 +6,9 @@ Prosta aplikacja CLI do zarządzania zadaniami napisana w Pythonie.
 - Dodawanie nowych zadań
 - Usuwanie istniejących zadań
 - Wyświetlanie listy wszystkich zadań
+- Sortowanie zadań
+- Wyszukiwanie zadań
+- Edycja zadań (od wersji 1.2.0)
 - Prosty interfejs tekstowy
 
 ## Instalacja
@@ -20,7 +23,10 @@ Po uruchomieniu programu wybierz opcję z menu:
 1. Dodaj zadanie
 2. Usuń zadanie
 3. Wyświetl zadania
-4. Wyjdź
+4. Sortuj zadania
+5. Wyszukaj zadania
+6. Edytuj zadanie
+7. Powrót do menu głównego
 Wybierz opcję: 1  
 Podaj treść zadania: Kupic mleko  
 Dodano zadanie: Kupic mleko  
