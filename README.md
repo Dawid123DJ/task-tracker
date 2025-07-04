@@ -40,7 +40,7 @@ AWS Elastic Beanstalk
 2. Skonfiguruj dostęp:  
 eb init task-tracker -p python-3.11 --region eu-north-1  
 eb create task-tracker-env  
-3. Wypchnij zmiany i wdroż: 
+3. Wypchnij zmiany i wdroż:  
 git push origin main  
 eb deploy  
 4. Po zakończeniu wdrażania aplikacja będzie dostępna pod adresem wygenerowanym przez AWS Elastic Beanstalk
