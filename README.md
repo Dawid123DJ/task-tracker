@@ -9,12 +9,15 @@ Prosta aplikacja CLI do zarządzania zadaniami napisana w Pythonie.
 - Sortowanie zadań
 - Wyszukiwanie zadań
 - Edycja zadań (od wersji 1.2.0)
-- Prosty interfejs tekstowy
+- Prosty interfejs tekstowy 
+- Prosty interfejs webowy (obecnie w formie webowej z ograniczoną funkcjonalnością)
 
 ## Instalacja
 Sklonuj repozytorium za pomocą komendy: git clone https://github.com/Dawid123DJ/task-tracker.git  
+Zainstaluj wymagane biblioteki z pliku requirements.txt  
 Następnie przejdź do odpowiedniego katalogu za pomocą: cd task-tracker  
-Uruchom aplikację komendą: python task_tracker.py
+Uruchom aplikację komendą: python task_tracker.py  
+Dokonaj wyboru czy chcesz używać aplikacji w formie tekstowej czy za pomocą Web UI: http://localhost:8000/  
 
 ## Użycie  
 Po uruchomieniu programu wybierz opcję z menu:
@@ -30,6 +33,23 @@ Po uruchomieniu programu wybierz opcję z menu:
 Wybierz opcję: 1  
 Podaj treść zadania: Kupic mleko  
 Dodano zadanie: Kupic mleko  
+
+## Deployment  
+AWS Elastic Beanstalk  
+1. Zainstaluj AWS EB CLI
+2. Skonfiguruj dostęp: 
+  eb init task-tracker -p python-3.11 --region eu-north-1 
+  oraz eb create task-tracker-env
+3. Wypchnij zmiany i wdroż: git push origin main oraz eb deploy
+4. Po zakończeniu wdrażania aplikacja będzie dostępna pod adresem wygenerowanym przez AWS Elastic Beanstalk
+
+##CI/CD (GitHub Actions)  
+Po każdym push/pull request na main:
+- Uruchamiane są testy  
+- Budowany jest Docker  
+- Automatyczny deploy na AWS EB (tylko z main)
+- Po wdrożeniu wykonywany jest health check aplikacji, aby upewnić się, że działa poprawnie  
+
 ## Wymagania
 Python 3.6+ 
 
