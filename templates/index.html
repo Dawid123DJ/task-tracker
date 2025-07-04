@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <title>Task Tracker v{{ version }}</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2em auto; }
+    ul { padding-left: 1em; }
+    li { margin-bottom: 0.5em; }
+    form { display: inline; }
+    input[type="text"] { width: 70%; padding: 0.3em; }
+    button { padding: 0.3em 0.6em; }
+  </style>
+</head>
+<body>
+  <h1>Task Tracker v{{ version }}</h1>
+  <h2>Lista zadań ({{ tasks|length }})</h2>
+
+  <ul>
+    {% for i, t in tasks %}
+      <li>
+        {{ i+1 }}. {{ t }}
+        <form method="post" action="/remove">
+          <input type="hidden" name="index" value="{{ i }}">
+          <button>Usuń</button>
+        </form>
+      </li>
+    {% endfor %}
+    {% if tasks|length == 0 %}
+      <li><em>Brak zadań</em></li>
+    {% endif %}
+  </ul>
+
+  <h3>Dodaj nowe zadanie</h3>
+  <form method="post" action="/add">
+    <input type="text" name="task" placeholder="Treść zadania" required>
+    <button>Dodaj</button>
+  </form>
+</body>
+</html>

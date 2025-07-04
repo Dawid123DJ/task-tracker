@@ -1,15 +1,18 @@
-import json
 import yaml
 import threading
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template, request, redirect, url_for
 
 APP_VERSION = "1.3.0"
 tasks = []
 app = Flask(__name__)
 
-# Endpoint health check
+# -------------------------------------------------------------------
+# Flask REST & Web UI
+# -------------------------------------------------------------------
+
 @app.route('/health')
 def health_check():
+    """Endpoint health check zwraca JSON z podstawowymi danymi o usłudze."""
     return jsonify({
         'status': 'OK',
         'version': APP_VERSION,
@@ -17,16 +20,46 @@ def health_check():
         'service': 'Task Tracker'
     })
 
-def run_flask_app():
-    app.run(host='0.0.0.0', port=8000)
+@app.route('/')
+def index():
+    """Strona główna: pokazuje listę zadań i formularz do dodawania/usuwania."""
+    return render_template(
+        'index.html',
+        version=APP_VERSION,
+        tasks=list(enumerate(tasks))
+    )
 
-def add_task(task):
+@app.route('/add', methods=['POST'])
+def web_add():
+    """Dodaje zadanie przez formularz webowy."""
+    task = request.form.get('task', '').strip()
+    if task:
+        add_task(task)
+    return redirect(url_for('index'))
+
+@app.route('/remove', methods=['POST'])
+def web_remove():
+    """Usuwa zadanie przez formularz webowy."""
+    try:
+        idx = int(request.form.get('index', -1))
+        remove_task(idx)
+    except ValueError:
+        pass
+    return redirect(url_for('index'))
+
+# -------------------------------------------------------------------
+# Funkcje wspólne (CLI + Web API)
+# -------------------------------------------------------------------
+
+def add_task(task: str):
+    """Dodaje zadanie do listy, zapisuje i drukuje komunikat."""
     tasks.append(task)
     print(f"Dodano zadanie: {task}")
     save_tasks()
 
-def remove_task(index):
-    if index < len(tasks):
+def remove_task(index: int):
+    """Usuwa zadanie o danym indeksie, jeśli istnieje."""
+    if 0 <= index < len(tasks):
         removed = tasks.pop(index)
         print(f"Usunięto zadanie: {removed}")
         save_tasks()
@@ -34,6 +67,7 @@ def remove_task(index):
         print("Nie ma zadania o podanym indeksie")
 
 def list_tasks():
+    """Wyświetla listę zadań w CLI."""
     if not tasks:
         print("Brak zadań.")
     else:
@@ -41,11 +75,38 @@ def list_tasks():
         for i, task in enumerate(tasks):
             print(f"{i + 1}. {task}")
 
+def sort_tasks():
+    """Sortuje zadania alfabetycznie w CLI."""
+    tasks.sort(key=lambda x: x.lower())
+    print("Zadania posortowane alfabetycznie!")
+    save_tasks()
+
+def search_tasks(task_list, keywords):
+    """Wyszukiwanie zadań – zwraca listę zadań zawierających wszystkie słowa kluczowe."""
+    if not task_list or not keywords:
+        return []
+    keyword_list = [k.lower() for k in keywords.split()]
+    return [
+        task for task in task_list
+        if all(keyword in task.lower() for keyword in keyword_list)
+    ]
+
+def edit_task(task_list, index, new_task):
+    """Edytuje treść zadania na pozycji `index`."""
+    if not new_task.strip():
+        raise ValueError("Treść zadania nie może być pusta")
+    if 0 <= index < len(task_list):
+        task_list[index] = new_task
+    else:
+        raise IndexError("Nieprawidłowy indeks zadania")
+
 def save_tasks():
+    """Zapisuje listę zadań do pliku YAML."""
     with open('tasks.yaml', 'w') as f:
         yaml.dump(tasks, f)
 
 def load_tasks():
+    """Ładuje listę zadań z pliku YAML (lub inicjuje pustą, jeśli nie ma pliku)."""
     global tasks
     try:
         with open('tasks.yaml', 'r') as f:
@@ -71,48 +132,22 @@ def show_task_menu():
     print("7. Powrót do menu głównego")
     return input("Wybierz opcję: ")
 
-def sort_tasks():
-    global tasks
-    tasks.sort(key=lambda x: x.lower())
-    print("Zadania posortowane alfabetycznie!")
-    save_tasks()
-
-def search_tasks(task_list, keywords):
-    if not task_list or not keywords:
-        return []
-    
-    keyword_list = [k.lower() for k in keywords.split()]
-    
-    return [task for task in task_list 
-            if all(keyword in task.lower() for keyword in keyword_list)]
-
-def edit_task(task_list, index, new_task):
-    if not new_task.strip():
-        raise ValueError("Treść zadania nie może być pusta")
-        
-    if 0 <= index < len(task_list):
-        task_list[index] = new_task
-    else:
-        raise IndexError("Nieprawidłowy indeks zadania")
-
 def main_cli():
+    """Interaktywny tryb CLI – dokładnie tak, jak było wcześniej."""
     load_tasks()
-    
     while True:
         main_choice = show_main_menu()
-
         if main_choice == '1':
             while True:
                 task_choice = show_task_menu()
-
                 if task_choice == '1':
                     task = input("Podaj treść zadania: ")
                     add_task(task)
                 elif task_choice == '2':
                     list_tasks()
                     if tasks:
-                        index = int(input("Podaj indeks zadania do usunięcia: ")) - 1
-                        remove_task(index)
+                        idx = int(input("Podaj indeks zadania do usunięcia: ")) - 1
+                        remove_task(idx)
                     else:
                         print("Brak zadań do usunięcia")
                 elif task_choice == '3':
@@ -124,30 +159,23 @@ def main_cli():
                     results = search_tasks(tasks, keyword)
                     if results:
                         print("\nZnalezione zadania:")
-                        for i, task in enumerate(results, 1):
-                            print(f"{i}. {task}")
+                        for i, t in enumerate(results, 1):
+                            print(f"{i}. {t}")
                     else:
                         print("Brak wyników wyszukiwania")
                 elif task_choice == '6':
                     list_tasks()
                     if tasks:
                         try:
-                            index = int(input("Podaj indeks zadania do edycji: ")) - 1
-                            current_task = tasks[index]
-                            print(f"Edytujesz zadanie: '{current_task}'")
-                            
+                            idx = int(input("Podaj indeks zadania do edycji: ")) - 1
+                            current = tasks[idx]
+                            print(f"Edytujesz zadanie: '{current}'")
                             confirm = input("Czy na pewno chcesz edytować? (T/N): ")
                             if confirm.lower() != 't':
                                 print("Anulowano edycję")
                                 continue
-                                
                             new_content = input("Podaj nową treść zadania: ")
-                            
-                            if not new_content.strip():
-                                print("Błąd: Treść zadania nie może być pusta!")
-                                continue
-                                
-                            edit_task(tasks, index, new_content)
+                            edit_task(tasks, idx, new_content)
                             save_tasks()
                             print("Zadanie zaktualizowane!")
                         except (ValueError, IndexError) as e:
@@ -158,7 +186,6 @@ def main_cli():
                     break
                 else:
                     print("Nieprawidłowa opcja")
-
         elif main_choice == '2':
             save_tasks()
             print("Zapisano zmiany. Do zobaczenia!")
@@ -167,10 +194,8 @@ def main_cli():
             print("Nieprawidłowa opcja")
 
 if __name__ == "__main__":
-    # Uruchom serwer Flask w osobnym wątku
-    flask_thread = threading.Thread(target=run_flask_app)
-    flask_thread.daemon = True
+    # Uruchom serwer Flask w tle
+    flask_thread = threading.Thread(target=lambda: app.run(host='0.0.0.0', port=8000), daemon=True)
     flask_thread.start()
-    
-    # Uruchom główną aplikację CLI
+    # A potem uruchom tryb CLI
     main_cli()
