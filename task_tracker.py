@@ -1,15 +1,29 @@
 import json
 import yaml
+import threading
+from flask import Flask, jsonify
 
-APP_VERSION = "1.2.0"
+APP_VERSION = "1.3.0"
 tasks = []
+app = Flask(__name__)
 
+# Endpoint health check
+@app.route('/health')
+def health_check():
+    return jsonify({
+        'status': 'OK',
+        'version': APP_VERSION,
+        'task_count': len(tasks),
+        'service': 'Task Tracker'
+    })
+
+def run_flask_app():
+    app.run(host='0.0.0.0', port=8000)
 
 def add_task(task):
     tasks.append(task)
     print(f"Dodano zadanie: {task}")
     save_tasks()
-
 
 def remove_task(index):
     if index < len(tasks):
@@ -18,7 +32,6 @@ def remove_task(index):
         save_tasks()
     else:
         print("Nie ma zadania o podanym indeksie")
-
 
 def list_tasks():
     if not tasks:
@@ -41,9 +54,10 @@ def load_tasks():
         tasks = []
 
 def show_main_menu():
-    print(f"===== TASK TRACKER - SYSTEM ZADAŃ v{APP_VERSION} =====")
+    print(f"\n===== TASK TRACKER - SYSTEM ZADAŃ v{APP_VERSION} =====")
     print("1. Zarządzanie zadaniami")
     print("2. Zapisz i wyjdź")
+    print(f"Status aplikacji: http://localhost:8000/health")
     return input("Wybierz opcję: ")
 
 def show_task_menu():
@@ -61,6 +75,7 @@ def sort_tasks():
     global tasks
     tasks.sort(key=lambda x: x.lower())
     print("Zadania posortowane alfabetycznie!")
+    save_tasks()
 
 def search_tasks(task_list, keywords):
     if not task_list or not keywords:
@@ -80,8 +95,8 @@ def edit_task(task_list, index, new_task):
     else:
         raise IndexError("Nieprawidłowy indeks zadania")
 
-if __name__ == "__main__":
-    load_tasks()  # Ładowanie zadań przy starcie
+def main_cli():
+    load_tasks()
     
     while True:
         main_choice = show_main_menu()
@@ -94,13 +109,17 @@ if __name__ == "__main__":
                     task = input("Podaj treść zadania: ")
                     add_task(task)
                 elif task_choice == '2':
-                    index = int(input("Podaj indeks zadania do usunięcia: ")) - 1
-                    remove_task(index)
+                    list_tasks()
+                    if tasks:
+                        index = int(input("Podaj indeks zadania do usunięcia: ")) - 1
+                        remove_task(index)
+                    else:
+                        print("Brak zadań do usunięcia")
                 elif task_choice == '3':
                     list_tasks()
-                elif task_choice == '4':  # Sortowanie
+                elif task_choice == '4':
                     sort_tasks()
-                elif task_choice == '5':  # Wyszukiwanie
+                elif task_choice == '5':
                     keyword = input("Podaj frazę do wyszukania: ")
                     results = search_tasks(tasks, keyword)
                     if results:
@@ -109,7 +128,7 @@ if __name__ == "__main__":
                             print(f"{i}. {task}")
                     else:
                         print("Brak wyników wyszukiwania")
-                elif task_choice == '6':  # Edycja zadania
+                elif task_choice == '6':
                     list_tasks()
                     if tasks:
                         try:
@@ -124,7 +143,6 @@ if __name__ == "__main__":
                                 
                             new_content = input("Podaj nową treść zadania: ")
                             
-                            # Walidacja nowej treści
                             if not new_content.strip():
                                 print("Błąd: Treść zadania nie może być pusta!")
                                 continue
@@ -136,13 +154,23 @@ if __name__ == "__main__":
                             print(f"Błąd: {e}")
                     else:
                         print("Brak zadań do edycji")
-                elif task_choice == '7':  # Powrót
+                elif task_choice == '7':
                     break
                 else:
                     print("Nieprawidłowa opcja")
 
         elif main_choice == '2':
             save_tasks()
+            print("Zapisano zmiany. Do zobaczenia!")
             break
         else:
             print("Nieprawidłowa opcja")
+
+if __name__ == "__main__":
+    # Uruchom serwer Flask w osobnym wątku
+    flask_thread = threading.Thread(target=run_flask_app)
+    flask_thread.daemon = True
+    flask_thread.start()
+    
+    # Uruchom główną aplikację CLI
+    main_cli()
