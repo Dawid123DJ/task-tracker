@@ -1,0 +1,36 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # Aktualizacja aplikacji
+          docker pull ghcr.io/${{ github.repository_owner }}/task-tracker:latest
+          
+          # Zatrzymanie i usunięcie starego kontenera
+          docker stop task-tracker || true
+          docker rm task-tracker || true
+          
+          # Uruchomienie nowego kontenera
+          docker run -d \
+            --name task-tracker \
+            -p 8000:8000 \
+            -v /home/${{ secrets.SSH_USERNAME }}/task-tracker-data:/app \
+            ghcr.io/${{ github.repository_owner }}/task-tracker:latest
+          
+          # Wyświetlenie informacji o kontenerze
+          docker ps
