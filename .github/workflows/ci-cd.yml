@@ -69,6 +69,12 @@ jobs:
     if: github.ref == 'refs/heads/main'
     
     steps:
+    - name: Convert owner to lowercase
+      id: lowercase
+      run: |
+        LOWER_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        echo "lower_owner=$LOWER_OWNER" >> $GITHUB_OUTPUT
+
     - name: Deploy to production server
       uses: appleboy/ssh-action@v1.0.0
       with:
@@ -84,7 +90,7 @@ jobs:
           docker rm task-tracker || true
           
           # Pobranie najnowszej wersji
-          docker pull ghcr.io/${{ github.repository }}/task-tracker:latest
+          docker pull ghcr.io/${{ steps.lowercase.outputs.lower_owner }}/task-tracker:latest
           
           # Uruchomienie nowego kontenera
           docker run -d \
@@ -92,7 +98,7 @@ jobs:
             --restart unless-stopped \
             -p 8000:8000 \
             -v /home/${{ secrets.SSH_USERNAME }}/task-tracker-data:/app \
-            ghcr.io/${{ github.repository }}/task-tracker:latest
+            ghcr.io/${{ steps.lowercase.outputs.lower_owner }}/task-tracker:latest
           
           # Oczekiwanie na uruchomienie aplikacji
           sleep 10
