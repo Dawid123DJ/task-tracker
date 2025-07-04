@@ -62,3 +62,40 @@ jobs:
         tags: |
           ghcr.io/${{ steps.lowercase.outputs.lower_owner }}/task-tracker:latest
           ghcr.io/${{ steps.lowercase.outputs.lower_owner }}/task-tracker:${{ github.sha }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deploy to production server
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # Logowanie do GitHub Container Registry
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          
+          # Zatrzymanie i usunięcie starego kontenera
+          docker stop task-tracker || true
+          docker rm task-tracker || true
+          
+          # Pobranie najnowszej wersji
+          docker pull ghcr.io/${{ github.repository }}/task-tracker:latest
+          
+          # Uruchomienie nowego kontenera
+          docker run -d \
+            --name task-tracker \
+            --restart unless-stopped \
+            -p 8000:8000 \
+            -v /home/${{ secrets.SSH_USERNAME }}/task-tracker-data:/app \
+            ghcr.io/${{ github.repository }}/task-tracker:latest
+          
+          # Oczekiwanie na uruchomienie aplikacji
+          sleep 10
+          
+          # Test health check
+          curl -f http://localhost:8000/health || exit 1
